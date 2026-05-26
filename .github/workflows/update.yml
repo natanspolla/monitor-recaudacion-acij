@@ -1,0 +1,35 @@
+name: Actualizar datos ARCA
+
+on:
+  schedule:
+    - cron: '0 12 * * 1'   # Todos los lunes a las 12:00 UTC (9:00 AR)
+  workflow_dispatch:         # También se puede correr manualmente desde GitHub
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Instalar dependencias
+        run: pip install requests
+
+      - name: Descargar datos de ARCA y actualizar index.html
+        run: python update_data.py
+
+      - name: Commit y push si hubo cambios
+        run: |
+          git config user.email "institucional@acij.org.ar"
+          git config user.name "ACIJ Bot"
+          git add index.html
+          git diff --staged --quiet || (git commit -m "Actualización automática datos ARCA $(date +%Y-%m-%d)" && git push)
