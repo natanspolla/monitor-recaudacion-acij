@@ -23,7 +23,7 @@ def fetch_xls(year):
 
 
 def inject_year(content, year, b64):
-    pattern = rf'("{year}"\s*:\s*")[^"]*(")'
+    pattern = rf'({year}:\s*")[^"]*(")'
     updated, n = re.subn(pattern, rf"\g<1>{b64}\g<2>", content)
     if n == 0:
         print(f"  Aviso: clave {year} no encontrada en BUNDLED_XLS — omitiendo")
